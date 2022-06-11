@@ -1,40 +1,36 @@
 package com.diachuk.calendarnotes
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import com.diachuk.calendarnotes.list.ReusableList
-import com.diachuk.calendarnotes.text.SelectableEditText
+import androidx.compose.ui.platform.LocalFocusManager
+import com.diachuk.calendarnotes.list.CheckItem
+import com.diachuk.calendarnotes.list.CheckList
 import com.diachuk.calendarnotes.ui.theme.CalendarNotesTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val focusManager = LocalFocusManager.current
             CalendarNotesTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable {
+                            focusManager.clearFocus(true)
+                        },
                     color = MaterialTheme.colors.background
                 ) {
                     Greeting("Android")
@@ -45,19 +41,18 @@ class MainActivity : ComponentActivity() {
 }
 
 
-
 @Composable
 fun Greeting(name: String) {
-    var text by remember {
-        mutableStateOf("qweqwe")
+    val texts = remember {
+        mutableStateListOf(
+            "Onew",
+            "asdjkh",
+            "qweoij"
+        )
     }
     SelectionContainer {
         Column {
-//            ReusableList()
-            Text(text = "asdkhasldkj alskdj")
-            SelectableEditText(value = text, onValueChange = {text = it}) {
-
-            }
+            Reusable
         }
     }
 }

@@ -1,53 +1,50 @@
 package com.diachuk.calendarnotes.list
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import com.diachuk.calendarnotes.text.SelectableEditText
 
+
 @Composable
-fun ReusableList(controller: ListController = remember { ListController() }) {
-    val texts = remember {
-        mutableStateListOf(
-            "One",
-            "Two"
-        )
-    }
-    var action by remember {
-        mutableStateOf("None")
-    }
+fun ReusableList(
+    texts: List<Item>,
+    onValueChange: (index: Int, value: String) -> Unit,
+    onFocused: (index: Int) -> Unit = {}
+) {
     val focusManager = LocalFocusManager.current
 
     Column {
-        Text(text = texts.size.toString())
         texts.forEachIndexed { index, s ->
-            SelectableEditText(value = s, onValueChange = {
-                texts[index] = it
-            },
-            onNext = {
-                texts.add("NEWWWW")
-                action = "New"
-            })
-        }
-        Button(onClick = {
-            texts.add("NEWWWW")
-            action = "Newb"
-        }) {
-            Text(text = "+ add row")
-        }
-    }
-
-    SideEffect {
-        if (action == "New") {
-            println("down")
-            focusManager.moveFocus(FocusDirection.Down)
-        }
-
-        if (action != "None") {
-            action = "None"
+            SelectableEditText(
+                modifier = Modifier.fillMaxWidth(),
+                value = s,
+                onValueChange = {
+                    onValueChange(index, it)
+                },
+                onFocused = {onFocused(index)},
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text
+                ),
+                style = MaterialTheme.typography.body2.copy(color = Color.DarkGray)
+            )
         }
     }
 }
