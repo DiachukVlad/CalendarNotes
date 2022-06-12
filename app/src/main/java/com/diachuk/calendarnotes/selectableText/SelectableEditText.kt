@@ -1,4 +1,4 @@
-package com.diachuk.calendarnotes.text
+package com.diachuk.calendarnotes.selectableText
 
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.text.BasicTextField
@@ -12,36 +12,9 @@ import androidx.compose.ui.focus.*
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-
-class SelectableItem(var textField: TextFieldValue) {
-    var focused: Boolean by mutableStateOf(false)
-    override fun toString(): String {
-        return "SelectableItem(text=$textField, focused=$focused)"
-    }
-
-    fun copy(textField: TextFieldValue): SelectableItem {
-        return SelectableItem(textField).also { it.focused = focused }
-    }
-
-    fun putCursorOn(offset: Int) {
-        textField = textField.copy(selection = TextRange(offset))
-    }
-
-    companion object {
-        fun empty(focused: Boolean = false): SelectableItem {
-            return SelectableItem(TextFieldValue()).also { it.focused = focused }
-        }
-    }
-}
-
-fun String.toSelectable(): SelectableItem {
-    return SelectableItem(TextFieldValue(this))
-}
 
 @Composable
 fun SelectableEditText(
@@ -106,7 +79,7 @@ fun SelectableEditText(
     }
 
     LaunchedEffect(value.focused) {
-        if(value.focused) {
+        if (value.focused) {
             requester.requestFocus()
         }
     }

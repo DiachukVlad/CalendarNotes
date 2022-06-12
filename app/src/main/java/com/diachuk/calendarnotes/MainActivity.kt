@@ -18,11 +18,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.diachuk.calendarnotes.list.ReusableList
-import com.diachuk.calendarnotes.text.SelectableItem
-import com.diachuk.calendarnotes.text.toSelectable
+import com.diachuk.calendarnotes.selectableText.SelectableItem
+import com.diachuk.calendarnotes.selectableText.toSelectable
 import com.diachuk.calendarnotes.ui.theme.CalendarNotesTheme
 
 class MainActivity : ComponentActivity() {
