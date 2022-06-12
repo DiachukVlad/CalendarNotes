@@ -39,6 +39,7 @@ fun ReusableList(
                 },
                 keyboardActions = KeyboardActions(onNext = {
                     if (index < texts.lastIndex) {
+                        texts[index+1].let { it.putCursorOn(it.textField.text.length) }
                         focusManager.moveFocus(FocusDirection.Down)
                     } else {
                         addNew()

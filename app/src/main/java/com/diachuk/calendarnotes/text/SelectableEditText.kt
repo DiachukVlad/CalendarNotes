@@ -1,7 +1,5 @@
 package com.diachuk.calendarnotes.text
 
-import android.view.textclassifier.TextSelection
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.ClickableText
@@ -20,10 +18,18 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
-data class SelectableItem(var text: TextFieldValue) {
+class SelectableItem(var textField: TextFieldValue) {
     var focused: Boolean by mutableStateOf(false)
     override fun toString(): String {
-        return "SelectableItem(text=$text, focused=$focused)"
+        return "SelectableItem(text=$textField, focused=$focused)"
+    }
+
+    fun copy(textField: TextFieldValue): SelectableItem {
+        return SelectableItem(textField).also { it.focused = focused }
+    }
+
+    fun putCursorOn(offset: Int) {
+        textField = textField.copy(selection = TextRange(offset))
     }
 
     companion object {
@@ -59,11 +65,10 @@ fun SelectableEditText(
 
     if (value.focused) {
         BasicTextField(
-            value = value.text,
+            value = value.textField,
             onValueChange = {
-                if (value.text != it) {
-                    value.text = it
-                    onValueChange(value)
+                if (value.textField != it) {
+                    onValueChange(value.copy(textField = it))
                 }
             },
             textStyle = style,
@@ -83,7 +88,6 @@ fun SelectableEditText(
             maxLines = if (singleLine) 1 else maxLines,
         )
     } else {
-
         ClickableText(modifier = modifier
             .onFocusChanged {
                 if (it.isFocused) {
@@ -92,12 +96,11 @@ fun SelectableEditText(
             }
             .focusTarget()
             .defaultMinSize(minWidth = 10.dp, minHeight = 10.dp),
-            text = value.text.annotatedString,
+            text = value.textField.annotatedString,
             style = style,
             onClick = { offset ->
                 value.focused = true
-                value.text = value.text.copy(selection = TextRange(offset))
-                onValueChange(value)
+                value.putCursorOn(offset)
             }
         )
     }
