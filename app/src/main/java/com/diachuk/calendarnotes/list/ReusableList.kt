@@ -17,21 +17,22 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.diachuk.calendarnotes.text.SelectableEditText
+import com.diachuk.calendarnotes.text.SelectableItem
 
 
 @Composable
 fun ReusableList(
-    texts: List<Item>,
-    onValueChange: (index: Int, value: String) -> Unit,
+    texts: List<SelectableItem>,
+    onValueChange: (index: Int, value: SelectableItem) -> Unit,
     onFocused: (index: Int) -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
 
     Column {
-        texts.forEachIndexed { index, s ->
+        texts.forEachIndexed { index, text ->
             SelectableEditText(
                 modifier = Modifier.fillMaxWidth(),
-                value = s,
+                value = text,
                 onValueChange = {
                     onValueChange(index, it)
                 },

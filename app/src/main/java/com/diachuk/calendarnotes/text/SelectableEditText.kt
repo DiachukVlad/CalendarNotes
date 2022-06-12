@@ -18,52 +18,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import kotlin.random.Random
 
-@Composable
-fun SelectableEditText(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    onFocused: (() -> Unit)? = null,
-    style: TextStyle = LocalTextStyle.current,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-    singleLine: Boolean = false,
-    maxLines: Int = Int.MAX_VALUE,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    cursorBrush: Brush = SolidColor(Color.Black),
-) {
-    LaunchedEffect(Unit) {
-        println(Random.nextInt())
-    }
-    var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
-    val textFieldValue = textFieldValueState.copy(text = value)
-
-    SelectableEditText(
-        value = textFieldValue,
-        onValueChange = {
-            textFieldValueState = it
-            if (value != it.text) {
-                onValueChange(it.text)
-            }
-        },
-        modifier,
-        onFocused,
-        style,
-        keyboardOptions,
-        keyboardActions,
-        singleLine,
-        maxLines,
-        visualTransformation,
-        cursorBrush
-    )
+data class SelectableItem(var text: TextFieldValue, var focused: Boolean = false)
+fun String.toSelectable(): SelectableItem {
+    return SelectableItem(TextFieldValue(this))
 }
 
 @Composable
 fun SelectableEditText(
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
+    value: SelectableItem,
+    onValueChange: (SelectableItem) -> Unit,
     modifier: Modifier = Modifier,
     onFocused: (() -> Unit)? = null,
     style: TextStyle = LocalTextStyle.current,
@@ -79,29 +43,26 @@ fun SelectableEditText(
     var clicked by remember {
         mutableStateOf(false)
     }
-    var wasFocused by remember {
-        mutableStateOf(false)
-    }
     val requester = remember {
         FocusRequester()
     }
 
     if (editable) {
         BasicTextField(
-            value = value,
+            value = value.text,
             onValueChange = {
-                if (value != it) {
-                    onValueChange(it)
+                if (value.text != it) {
+                    onValueChange(value.also {oldValue -> oldValue.text = it })
                 }
             },
             textStyle = style,
             modifier = modifier
                 .focusRequester(requester)
                 .onFocusEvent {
-                    if (wasFocused && !it.isFocused) {
+                    if (value.focused && !it.isFocused) {
                         editable = false
                     }
-                    wasFocused = it.isFocused
+                    value.focused = it.isFocused
                 },
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
@@ -130,14 +91,14 @@ fun SelectableEditText(
             .clickable {
                 onFocus()
             },
-            text = value.annotatedString,
+            text = value.text.annotatedString,
             style = style,
             onClick = { offset ->
                 onFocused?.invoke()
                 editable = true
                 clicked = true
 
-                onValueChange(value.copy(selection = TextRange(offset)))
+                onValueChange(value.also{ it.text = value.text.copy(selection = TextRange(offset)) })
             }
         )
     }
@@ -146,6 +107,14 @@ fun SelectableEditText(
         if (clicked) {
             requester.requestFocus()
             clicked = false
+        }
+    }
+
+    LaunchedEffect(value.focused) {
+        if(value.focused) {
+            editable = true
+            clicked = true
+            value.focused = false
         }
     }
 }
