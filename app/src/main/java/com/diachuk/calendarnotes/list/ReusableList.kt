@@ -24,7 +24,8 @@ import com.diachuk.calendarnotes.text.SelectableItem
 fun ReusableList(
     texts: List<SelectableItem>,
     onValueChange: (index: Int, value: SelectableItem) -> Unit,
-    onFocused: (index: Int) -> Unit = {}
+    onFocused: (index: Int) -> Unit = {},
+    addNew: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -36,9 +37,12 @@ fun ReusableList(
                 onValueChange = {
                     onValueChange(index, it)
                 },
-                onFocused = {onFocused(index)},
                 keyboardActions = KeyboardActions(onNext = {
-                    focusManager.moveFocus(FocusDirection.Down)
+                    if (index < texts.lastIndex) {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    } else {
+                        addNew()
+                    }
                 }),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next,

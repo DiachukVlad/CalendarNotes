@@ -61,14 +61,17 @@ fun Greeting(name: String) {
     SelectionContainer {
         Column {
             Button(onClick = {
-                texts+=SelectableItem(TextFieldValue(), true)
+                texts+=SelectableItem.empty(focused = true)
             }) {
                 Text(text = "Add new")
             }
 
             Spacer(modifier = Modifier.size(10.dp))
 
-            ReusableList(texts = texts, onValueChange = { index, text -> texts[index] = text })
+            ReusableList(
+                texts = texts,
+                onValueChange = { index, text -> texts[index] = text },
+                addNew = { texts += SelectableItem.empty(focused = true)})
         }
     }
 }

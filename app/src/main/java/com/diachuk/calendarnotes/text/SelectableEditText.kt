@@ -1,5 +1,6 @@
 package com.diachuk.calendarnotes.text
 
+import android.view.textclassifier.TextSelection
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.text.BasicTextField
@@ -19,7 +20,19 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
-data class SelectableItem(var text: TextFieldValue, var focused: Boolean = false)
+class SelectableItem(var text: TextFieldValue) {
+    var focused: Boolean by mutableStateOf(false)
+    override fun toString(): String {
+        return "SelectableItem(text=$text, focused=$focused)"
+    }
+
+    companion object {
+        fun empty(focused: Boolean = false): SelectableItem {
+            return SelectableItem(TextFieldValue()).also { it.focused = focused }
+        }
+    }
+}
+
 fun String.toSelectable(): SelectableItem {
     return SelectableItem(TextFieldValue(this))
 }
@@ -29,7 +42,6 @@ fun SelectableEditText(
     value: SelectableItem,
     onValueChange: (SelectableItem) -> Unit,
     modifier: Modifier = Modifier,
-    onFocused: (() -> Unit)? = null,
     style: TextStyle = LocalTextStyle.current,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -40,9 +52,6 @@ fun SelectableEditText(
 ) {
     var editable by remember { mutableStateOf(false) }
 
-    var clicked by remember {
-        mutableStateOf(false)
-    }
     val requester = remember {
         FocusRequester()
     }
@@ -52,7 +61,8 @@ fun SelectableEditText(
             value = value.text,
             onValueChange = {
                 if (value.text != it) {
-                    onValueChange(value.also {oldValue -> oldValue.text = it })
+                    value.text = it
+                    onValueChange(value)
                 }
             },
             textStyle = style,
@@ -73,9 +83,7 @@ fun SelectableEditText(
         )
     } else {
         val onFocus = {
-            onFocused?.invoke()
             editable = true
-            clicked = true
         }
         var focused by remember {
             mutableStateOf(false)
@@ -87,33 +95,27 @@ fun SelectableEditText(
                 focused = it.isFocused
             }
             .focusTarget()
-            .defaultMinSize(minWidth = 10.dp, minHeight = 10.dp)
-            .clickable {
-                onFocus()
-            },
+            .defaultMinSize(minWidth = 10.dp, minHeight = 10.dp),
             text = value.text.annotatedString,
             style = style,
             onClick = { offset ->
-                onFocused?.invoke()
                 editable = true
-                clicked = true
 
-                onValueChange(value.also{ it.text = value.text.copy(selection = TextRange(offset)) })
+                value.text = value.text.copy(selection = TextRange(offset))
+                onValueChange(value)
             }
         )
     }
 
-    LaunchedEffect(key1 = clicked) {
-        if (clicked) {
+    LaunchedEffect(key1 = editable) {
+        if (editable) {
             requester.requestFocus()
-            clicked = false
         }
     }
 
     LaunchedEffect(value.focused) {
         if(value.focused) {
             editable = true
-            clicked = true
             value.focused = false
         }
     }
