@@ -51,12 +51,16 @@ fun SelectableEditText(
     cursorBrush: Brush = SolidColor(Color.Black),
 ) {
     var editable by remember { mutableStateOf(false) }
+    println("${value.text.text}editable = ${editable}")
 
     val requester = remember {
         FocusRequester()
     }
+    var wasFocused by remember {
+        mutableStateOf(false)
+    }
 
-    if (editable) {
+    if (value.focused) {
         BasicTextField(
             value = value.text,
             onValueChange = {
@@ -69,10 +73,11 @@ fun SelectableEditText(
             modifier = modifier
                 .focusRequester(requester)
                 .onFocusEvent {
-                    if (value.focused && !it.isFocused) {
+                    if (wasFocused && !it.isFocused) {
                         editable = false
+                        value.focused = false
+                        wasFocused = false
                     }
-                    value.focused = it.isFocused
                 },
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
@@ -109,6 +114,7 @@ fun SelectableEditText(
 
     LaunchedEffect(key1 = editable) {
         if (editable) {
+            println("Request ${value.text.text}")
             requester.requestFocus()
         }
     }
@@ -116,7 +122,7 @@ fun SelectableEditText(
     LaunchedEffect(value.focused) {
         if(value.focused) {
             editable = true
-            value.focused = false
+//            value.focused = false
         }
     }
 }
