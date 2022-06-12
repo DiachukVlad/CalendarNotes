@@ -20,7 +20,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
-class SelectableItem(var text: TextFieldValue) {
+data class SelectableItem(var text: TextFieldValue) {
     var focused: Boolean by mutableStateOf(false)
     override fun toString(): String {
         return "SelectableItem(text=$text, focused=$focused)"
@@ -50,9 +50,6 @@ fun SelectableEditText(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     cursorBrush: Brush = SolidColor(Color.Black),
 ) {
-    var editable by remember { mutableStateOf(false) }
-    println("${value.text.text}editable = ${editable}")
-
     val requester = remember {
         FocusRequester()
     }
@@ -74,7 +71,6 @@ fun SelectableEditText(
                 .focusRequester(requester)
                 .onFocusEvent {
                     if (wasFocused && !it.isFocused) {
-                        editable = false
                         value.focused = false
                         wasFocused = false
                     }
@@ -87,42 +83,28 @@ fun SelectableEditText(
             maxLines = if (singleLine) 1 else maxLines,
         )
     } else {
-        val onFocus = {
-            editable = true
-        }
-        var focused by remember {
-            mutableStateOf(false)
-        }
 
         ClickableText(modifier = modifier
             .onFocusChanged {
-                if (!focused && it.isFocused) onFocus()
-                focused = it.isFocused
+                if (it.isFocused) {
+                    value.focused = true
+                }
             }
             .focusTarget()
             .defaultMinSize(minWidth = 10.dp, minHeight = 10.dp),
             text = value.text.annotatedString,
             style = style,
             onClick = { offset ->
-                editable = true
-
+                value.focused = true
                 value.text = value.text.copy(selection = TextRange(offset))
                 onValueChange(value)
             }
         )
     }
 
-    LaunchedEffect(key1 = editable) {
-        if (editable) {
-            println("Request ${value.text.text}")
-            requester.requestFocus()
-        }
-    }
-
     LaunchedEffect(value.focused) {
         if(value.focused) {
-            editable = true
-//            value.focused = false
+            requester.requestFocus()
         }
     }
 }
