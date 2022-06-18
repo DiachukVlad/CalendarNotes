@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.diachuk.calendarnotes.list.ReusableList
+import com.diachuk.calendarnotes.markdown.MarkdownTextField
 import com.diachuk.calendarnotes.selectableText.SelectableItem
 import com.diachuk.calendarnotes.selectableText.toSelectable
 import com.diachuk.calendarnotes.ui.theme.CalendarNotesTheme
@@ -49,28 +50,5 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String) {
-    val texts = remember {
-        mutableStateListOf(
-            "Onew".toSelectable(),
-            "asdjkh".toSelectable(),
-            "qweoij".toSelectable()
-        )
-    }
-
-    SelectionContainer {
-        Column {
-            Button(onClick = {
-                texts+=SelectableItem.empty(focused = true)
-            }) {
-                Text(text = "Add new")
-            }
-
-            Spacer(modifier = Modifier.size(10.dp))
-
-            ReusableList(
-                texts = texts,
-                onValueChange = { index, text -> texts[index] = text },
-                addNew = { texts += SelectableItem.empty(focused = true)})
-        }
-    }
+MarkdownTextField()
 }
