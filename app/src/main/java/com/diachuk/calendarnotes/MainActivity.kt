@@ -4,25 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
-import com.diachuk.calendarnotes.list.ReusableList
-import com.diachuk.calendarnotes.markdown.MarkdownTextField
-import com.diachuk.calendarnotes.selectableText.SelectableItem
-import com.diachuk.calendarnotes.selectableText.toSelectable
+import com.diachuk.calendarnotes.styledText.StyledTextScreen
 import com.diachuk.calendarnotes.ui.theme.CalendarNotesTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,5 +38,5 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String) {
-MarkdownTextField()
+    StyledTextScreen()
 }
