@@ -32,7 +32,7 @@ fun StyledButtons(modifier: Modifier = Modifier, vm: StyledVM = remember { Style
                 }
             },
             onClick = {
-                vm.onClick(StyleType.H1)
+                vm.onClick(StyleType.Huge)
             }
         )
         StyledButton(

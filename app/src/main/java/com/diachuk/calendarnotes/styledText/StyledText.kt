@@ -29,7 +29,6 @@ fun StyledTextScreen() {
         }
     ) {
         Column() {
-            Text(text = vm.print.collectAsState().value)
             Spacer(modifier = Modifier.height(10.dp))
             StyledTextField(vm)
         }
