@@ -1,4 +1,4 @@
-package com.diachuk.calendarnotes
+package com.diachuk.calendarnotes.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
