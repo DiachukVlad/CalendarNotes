@@ -1,6 +1,5 @@
 package com.diachuk.calendarnotes.styledText
 
-import android.util.Range
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,6 +23,12 @@ fun Byte.createStyle(): SpanStyle {
     if (this and StyleType.Huge.byte > 0) {
         res += SpanStyle(fontSize = 32.sp)
     }
+    if (this and StyleType.Big.byte > 0) {
+        res += SpanStyle(fontSize = 28.sp)
+    }
+    if (this and StyleType.Medium.byte > 0) {
+        res += SpanStyle(fontSize = 24.sp)
+    }
     if (this and StyleType.Bold.byte > 0) {
         res += SpanStyle(fontWeight = FontWeight.Bold)
     }
@@ -42,8 +47,8 @@ sealed class ChangeEvent {
 }
 
 
-class StyledVM {
-    val textField = MutableStateFlow(TextFieldValue("qasdjkhg\nkljwesdf\nsdklfj"))
+class StyledController {
+    val textField = MutableStateFlow(TextFieldValue(""))
     private var annotatedString: AnnotatedString
         get() = textField.value.annotatedString
         set(value) {
@@ -91,7 +96,7 @@ class StyledVM {
                     } else if (event.cursor - 1 >= 0) {
                         styles[event.cursor - 1]
                     } else {
-                        styles[0]
+                        StyleType.None.byte
                     }
 
                 styles.addAll(event.cursor, Array(event.length) { byte }.toList())
@@ -111,7 +116,7 @@ class StyledVM {
                     } else if (event.deleteRange.first - 1 >= 0) {
                         styles[event.deleteRange.first - 1]
                     } else {
-                        styles[0]
+                        StyleType.None.byte
                     }
                 styles.addAll(
                     event.deleteRange.first,
@@ -128,7 +133,7 @@ class StyledVM {
     }
 
 
-    fun onClick(styleType: StyleType) {
+    fun triggerStyle(styleType: StyleType) {
         val start = textField.value.selection.start
         val end = textField.value.selection.end
 
