@@ -41,7 +41,7 @@ fun MainScreen(appState: AppState = get(), vm: MainViewModel = getViewModel()) {
             BottomNavigationItem(
                 selected = false,
                 onClick = {},
-                icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
+                icon = { Icon(Icons.Default.CalendarToday, contentDescription = null) },
                 label = { Text(text = "Calendar") }
             )
         }

@@ -1,6 +1,7 @@
 package com.diachuk.calendarnotes
 
 import android.app.Application
+import com.diachuk.calendarnotes.data.di.dataModule
 import com.diachuk.calendarnotes.di.AppModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -15,7 +16,8 @@ class CalendarApp: Application() {
             androidLogger()
             androidContext(this@CalendarApp)
             modules(
-                AppModule().module
+                AppModule().module,
+                dataModule
             )
         }
     }

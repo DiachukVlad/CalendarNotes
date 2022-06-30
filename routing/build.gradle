@@ -10,7 +10,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        minSdk 21
+        minSdk 24
         targetSdk 32
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -36,7 +36,6 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion compose_ui_version
-        kotlinCompilerVersion '1.5.31'
     }
     packagingOptions {
         resources {

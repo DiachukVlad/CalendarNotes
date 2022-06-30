@@ -3,6 +3,11 @@ package com.diachuk.calendarnotes
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.diachuk.calendarnotes.styledText.StyledTextField
 import com.diachuk.calendarnotes.ui.theme.CalendarNotesTheme
 import com.diachuk.routing.RoutingHost
 import org.koin.android.ext.android.get
@@ -18,9 +23,14 @@ class MainActivity : ComponentActivity(), AndroidScopeComponent {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CalendarNotesTheme {
-                RoutingHost(routing = appState.routing)
-            }
+//            CalendarNotesTheme {
+//                RoutingHost(routing = appState.routing)
+//            }
+            StyledTextField(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp)
+            )
         }
     }
 }

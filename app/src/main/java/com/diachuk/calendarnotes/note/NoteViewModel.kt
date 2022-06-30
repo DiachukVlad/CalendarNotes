@@ -1,12 +1,17 @@
 package com.diachuk.calendarnotes.note
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.diachuk.calendarnotes.data.note.Note
+import com.diachuk.calendarnotes.data.note.NoteRepo
 import com.diachuk.calendarnotes.styledText.StyledController
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class NoteViewModel: ViewModel(){
+class NoteViewModel(private val noteRepo: NoteRepo) : ViewModel() {
     val title = MutableStateFlow("Untitled")
     val dateText = MutableStateFlow("Date")
     val styledController = StyledController()
@@ -16,6 +21,15 @@ class NoteViewModel: ViewModel(){
     }
 
     fun onDoneClick() {
-
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepo.insertNote(
+                Note(
+                    title = title.value,
+                    text = styledController.textField.annotatedString.text,
+                    date = 0,
+                    styles = styledController.styles
+                )
+            )
+        }
     }
 }

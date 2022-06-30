@@ -28,18 +28,18 @@ class Routing(start: Route) {
     enum class DoOnNext {
         Push, ChangeCurrent, PushWithoutRepeating
     }
-
-    constructor(start: Route, flowRoute: Flow<Route>, doOnNext: DoOnNext) : this(start) {
-        CoroutineScope(Dispatchers.Default).launch {
-            flowRoute.collect { screen ->
-                when (doOnNext) {
-                    DoOnNext.Push -> push(screen)
-                    DoOnNext.ChangeCurrent -> changeCurrent(screen)
-                    DoOnNext.PushWithoutRepeating -> pushWithoutRepeating(screen)
-                }
-            }
-        }
-    }
+//
+//    constructor(start: Route, flowRoute: Flow<Route>, doOnNext: DoOnNext) : this(start) {
+//        CoroutineScope(Dispatchers.Default).launch {
+//            flowRoute.collect { screen ->
+//                when (doOnNext) {
+//                    DoOnNext.Push -> push(screen)
+//                    DoOnNext.ChangeCurrent -> changeCurrent(screen)
+//                    DoOnNext.PushWithoutRepeating -> pushWithoutRepeating(screen)
+//                }
+//            }
+//        }
+//    }
 
     fun changeCurrent(
         nextRoute: Route,

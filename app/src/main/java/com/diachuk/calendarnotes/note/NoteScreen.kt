@@ -33,64 +33,67 @@ object NoteRoute: Route(enterTransition = slideInHorizontally{it/2} + fadeIn(), 
 @Preview
 @Composable
 fun NoteScreen(vm: NoteViewModel = getViewModel()) {
+    println("NoteScreen")
     val title by vm.title.collectAsState()
     val dateText by vm.dateText.collectAsState()
 
-    Scaffold(
-        bottomBar = {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                StyledButtons(controller = vm.styledController)
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = vm::onDoneClick) {
-                Icon(imageVector = Icons.Default.Done, contentDescription = "Done")
-            }
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(bottom = it.calculateBottomPadding())
-                .fillMaxSize()
-        ) {
-            // Title
-            BasicTextField(
-                modifier = Modifier
-                    .padding(top = 24.dp, start = 16.dp),
-                value = title,
-                onValueChange = vm::changeTitle,
-                textStyle = TextStyle(fontSize = 26.sp, fontWeight = FontWeight.Medium)
-            )
+//    Scaffold(
+//        bottomBar = {
+//            Box(modifier = Modifier.fillMaxWidth()) {
+//                StyledButtons(controller = vm.styledController)
+//            }
+//        },
+//        floatingActionButton = {
+//            FloatingActionButton(onClick = vm::onDoneClick) {
+//                Icon(imageVector = Icons.Default.Done, contentDescription = "Done")
+//            }
+//        }
+//    ) {
+//        Column(
+//            modifier = Modifier
+//                .padding(bottom = it.calculateBottomPadding())
+//                .fillMaxSize()
+//        ) {
+//            // Title
+//            BasicTextField(
+//                modifier = Modifier
+//                    .padding(top = 24.dp, start = 16.dp),
+//                value = title,
+//                onValueChange = vm::changeTitle,
+//                textStyle = TextStyle(fontSize = 26.sp, fontWeight = FontWeight.Medium)
+//            )
+//
+//            VSpace(size = 24.dp)
+//
+//            OutlinedButton(
+//                onClick = { /*TODO*/ },
+//                modifier = Modifier.padding(start = 16.dp)
+//            ) {
+//                Icon(Icons.Default.Add, contentDescription = null)
+//                HSpace(size = 6.dp)
+//                Text(dateText)
+//            }
+//
+//            VSpace(size = 16.dp)
+//
+//            Divider(
+//                Modifier
+//                    .padding(start = 8.dp, end = 48.dp)
+//                    .fillMaxWidth()
+//            )
+//
+//            VSpace(size = 16.dp)
+//
+//            println("Before")
+//            StyledTextField(
+//                modifier = Modifier
+//                    .padding(bottom = it.calculateBottomPadding())
+//                    .fillMaxSize()
+//                    .padding(start = 16.dp),
+//                vm.styledController
+//            )
+//        }
+//    }
 
-            VSpace(size = 24.dp)
 
-            OutlinedButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.padding(start = 16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null)
-                HSpace(size = 6.dp)
-                Text(dateText)
-            }
-
-            VSpace(size = 16.dp)
-
-            Divider(
-                Modifier
-                    .padding(start = 8.dp, end = 48.dp)
-                    .fillMaxWidth()
-            )
-
-            VSpace(size = 16.dp)
-
-            StyledTextField(
-                modifier = Modifier
-                    .padding(bottom = it.calculateBottomPadding())
-
-                    .fillMaxSize()
-                    .padding(start = 16.dp),
-                vm.styledController
-            )
-        }
-    }
 }
