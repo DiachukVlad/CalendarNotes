@@ -8,9 +8,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CalendarNotes">
+        android:theme="@style/Theme.CalendarNotes"
+        android:name=".CalendarApp">
         <activity
-            android:name=".main.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.CalendarNotes"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize">

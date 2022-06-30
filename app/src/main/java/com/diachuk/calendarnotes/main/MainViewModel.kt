@@ -1,8 +1,13 @@
 package com.diachuk.calendarnotes.main
 
+import androidx.lifecycle.ViewModel
+import com.diachuk.calendarnotes.AppState
+import com.diachuk.calendarnotes.note.NoteRoute
 import org.koin.android.annotation.KoinViewModel
-import org.koin.core.annotation.Single
 
-@Single
-class MainViewModel {
+@KoinViewModel
+class MainViewModel(val appState: AppState): ViewModel(){
+    fun createNote() {
+        appState.routing.push(NoteRoute)
+    }
 }
