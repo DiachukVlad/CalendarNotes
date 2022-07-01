@@ -1,9 +1,8 @@
 package com.diachuk.calendarnotes.styledText
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -13,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.experimental.and
 import kotlin.experimental.or
 import kotlin.experimental.xor
-import kotlin.random.Random
 
 enum class StyleType(val byte: Byte) {
     None(0), Huge(0b1), Big(0b10), Medium(0b100), Bold(0b1000), Italic(0b10000)
@@ -47,13 +45,13 @@ sealed class ChangeEvent {
     data class Delete(val range: Pair<Int, Int>) : ChangeEvent()
     data class DeletePaste(val deleteRange: Pair<Int, Int>, val pasteSize: Int) : ChangeEvent()
     object SelectionChange : ChangeEvent()
-    object Nothing: ChangeEvent()
+    object Nothing : ChangeEvent()
 }
 
 
 class StyledController {
-    var textField = MutableStateFlow(TextFieldValue("")) 
-    var onChange: ()->Unit = {}
+    var textField = MutableStateFlow(TextFieldValue(""))
+    var onChange: () -> Unit = {}
 
     private var annotatedString: AnnotatedString
         get() = textField.value.annotatedString
@@ -96,7 +94,9 @@ class StyledController {
     }
 
     fun changed(tf: TextFieldValue) {
-        when (val event = whatEvent(tf)) {
+        val event = whatEvent(tf)
+        println(event)
+        when (event) {
             is ChangeEvent.Paste -> {
                 val byte: Byte =
                     if (cursorStyle != null) {
@@ -135,6 +135,7 @@ class StyledController {
             }
             ChangeEvent.SelectionChange -> {}
             ChangeEvent.Nothing -> {
+                textField.tryEmit(tf)
                 return
             }
         }
@@ -162,7 +163,17 @@ class StyledController {
                 styles[i] = styles[i] or styleType.byte
             }
         }
-        onChange()
+
+        val composition =
+            if (textField.value.composition?.let { it.start == start && it.end == end } == true) {
+                null
+            } else {
+                TextRange(
+                    start,
+                    end
+                )
+            }
+        textField.tryEmit(textField.value.copy(composition = composition))
     }
 
     fun createAnnotatedString(text: String): AnnotatedString {
