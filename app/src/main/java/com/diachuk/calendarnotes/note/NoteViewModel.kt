@@ -2,16 +2,18 @@ package com.diachuk.calendarnotes.note
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.diachuk.calendarnotes.AppState
 import com.diachuk.calendarnotes.data.note.Note
 import com.diachuk.calendarnotes.data.note.NoteRepo
 import com.diachuk.calendarnotes.styledText.StyledController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class NoteViewModel(private val noteRepo: NoteRepo) : ViewModel() {
+class NoteViewModel(private val noteRepo: NoteRepo, private val appState: AppState) : ViewModel() {
     val title = MutableStateFlow("Untitled")
     val dateText = MutableStateFlow("Date")
     val styledController = StyledController()
@@ -30,6 +32,10 @@ class NoteViewModel(private val noteRepo: NoteRepo) : ViewModel() {
                     styles = styledController.styles
                 )
             )
+
+            withContext(Dispatchers.Main) {
+                appState.routing.pop()
+            }
         }
     }
 }

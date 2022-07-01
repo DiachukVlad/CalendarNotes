@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
@@ -18,15 +19,22 @@ fun StyledTextField(
     controller: StyledController = remember { StyledController() },
     focusRequester: FocusRequester? = null
 ) {
-    println("styled")
     var text by remember {
         mutableStateOf(TextFieldValue())
     }
 
+    DisposableEffect(key1 = controller, effect = {
+        controller.onChange = {
+            text = text.copy(selection = text.selection.run { return@run TextRange(end, end)})
+        }
+        onDispose {
+            controller.onChange = {}
+        }
+    })
+
     BasicTextField(
         value = text,
         onValueChange = {
-            println("on change ${Random.nextInt()}")
             text = it
             controller.changed(it)
         },

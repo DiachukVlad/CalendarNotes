@@ -11,7 +11,7 @@ data class NoteEntity(
     @NonNull val text: String,
     @NonNull val styles: ByteArray
 ) {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 
 

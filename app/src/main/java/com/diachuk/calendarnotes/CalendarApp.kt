@@ -3,6 +3,9 @@ package com.diachuk.calendarnotes
 import android.app.Application
 import com.diachuk.calendarnotes.data.di.dataModule
 import com.diachuk.calendarnotes.di.AppModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -21,6 +24,4 @@ class CalendarApp: Application() {
             )
         }
     }
-
-    
 }

@@ -53,7 +53,7 @@ sealed class ChangeEvent {
 
 class StyledController {
     var textField = TextFieldValue("")
-    val tfState = mutableStateOf(textField)
+    var onChange: ()->Unit = {}
 
     private var annotatedString: AnnotatedString
         get() = textField.annotatedString
@@ -139,7 +139,6 @@ class StyledController {
             }
         }
 
-        tfState.value = tf
         textField = tf
         cursorStyle = null
     }
@@ -163,6 +162,7 @@ class StyledController {
                 styles[i] = styles[i] or styleType.byte
             }
         }
+        onChange()
     }
 
     fun createAnnotatedString(text: String): AnnotatedString {
