@@ -19,23 +19,20 @@ fun StyledTextField(
     controller: StyledController = remember { StyledController() },
     focusRequester: FocusRequester? = null
 ) {
-    var text by remember {
-        mutableStateOf(TextFieldValue())
-    }
+    val text by controller.textField.collectAsState()
 
-    DisposableEffect(key1 = controller, effect = {
-        controller.onChange = {
-            text = text.copy(selection = text.selection.run { return@run TextRange(end, end)})
-        }
-        onDispose {
-            controller.onChange = {}
-        }
-    })
+//    DisposableEffect(key1 = controller, effect = {
+//        controller.onChange = {
+//            text = text.copy(selection = text.selection.run { return@run TextRange(end, end)})
+//        }
+//        onDispose {
+//            controller.onChange = {}
+//        }
+//    })
 
     BasicTextField(
         value = text,
         onValueChange = {
-            text = it
             controller.changed(it)
         },
         modifier = modifier,

@@ -4,7 +4,8 @@ data class Note(
     val title: String,
     val text: String,
     val styles: ArrayList<Byte>,
-    val date: Long
+    val date: Long,
+    val id: Int = 0
 )
 
 fun NoteEntity.toNote(): Note {
@@ -12,7 +13,8 @@ fun NoteEntity.toNote(): Note {
         title = title,
         text = text,
         styles = ArrayList(styles.asList()),
-        date = date
+        date = date,
+        id = id,
     )
 }
 
@@ -22,5 +24,5 @@ fun Note.toNoteEntity(): NoteEntity {
         text = text,
         styles = styles.toByteArray(),
         date = date
-    )
+    ).also { it.id = id }
 }

@@ -23,6 +23,10 @@ class MainViewModel(private val appState: AppState, private val noteRepo: NoteRe
     }
 
     fun createNote() {
-        appState.routing.push(NoteRoute)
+        appState.routing.push(NoteRoute(null))
+    }
+
+    fun noteClicked(index: Int) {
+        appState.routing.push(NoteRoute(notes.value[index].id))
     }
 }

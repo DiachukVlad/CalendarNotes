@@ -52,23 +52,23 @@ sealed class ChangeEvent {
 
 
 class StyledController {
-    var textField = TextFieldValue("")
+    var textField = MutableStateFlow(TextFieldValue("")) 
     var onChange: ()->Unit = {}
 
     private var annotatedString: AnnotatedString
-        get() = textField.annotatedString
+        get() = textField.value.annotatedString
         set(value) {
-            textField= textField.copy(annotatedString = value)
+            textField.tryEmit(textField.value.copy(annotatedString = value))
         }
     private val cursor: Int?
-        get() = textField.cursor
+        get() = textField.value.cursor
 
     val styles =
         ArrayList<Byte>().also { it.addAll(Array(annotatedString.length) { StyleType.None.byte }) }
     private var cursorStyle: Byte? = null
 
     private fun whatEvent(tf: TextFieldValue): ChangeEvent {
-        if (tf.text == textField.text && tf.selection == textField.selection) {
+        if (tf.text == textField.value.text && tf.selection == textField.value.selection) {
             return ChangeEvent.Nothing
         }
 
@@ -82,12 +82,12 @@ class StyledController {
         }
 
         if (cursor == null && tf.cursor != null) {
-            val selectionSize = textField.selection.end - textField.selection.start
+            val selectionSize = textField.value.selection.end - textField.value.selection.start
             when {
-                delta == -selectionSize -> return ChangeEvent.Delete(textField.selection.start to textField.selection.end)
+                delta == -selectionSize -> return ChangeEvent.Delete(textField.value.selection.start to textField.value.selection.end)
                 delta != 0 -> return ChangeEvent.DeletePaste(
-                    textField.selection.start to textField.selection.end,
-                    tf.cursor!! - textField.selection.start
+                    textField.value.selection.start to textField.value.selection.end,
+                    tf.cursor!! - textField.value.selection.start
                 )
             }
         }
@@ -139,14 +139,14 @@ class StyledController {
             }
         }
 
-        textField = tf
+        textField.tryEmit(tf)
         cursorStyle = null
     }
 
 
     fun triggerStyle(styleType: StyleType) {
-        val start = textField.selection.start
-        val end = textField.selection.end
+        val start = textField.value.selection.start
+        val end = textField.value.selection.end
 
         if (start == end) {
             if (start > 0) {

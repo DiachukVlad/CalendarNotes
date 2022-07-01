@@ -1,6 +1,9 @@
 package com.diachuk.calendarnotes.note
 
-import androidx.compose.animation.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
@@ -8,12 +11,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.diachuk.calendarnotes.base.HSpace
@@ -23,18 +26,22 @@ import com.diachuk.calendarnotes.styledText.StyledTextField
 import com.diachuk.routing.Route
 import org.koin.androidx.compose.getViewModel
 
-object NoteRoute: Route(enterTransition = slideInHorizontally{it/2} + fadeIn(), exitTransition = slideOutHorizontally{it/2} + fadeOut()) {
+class NoteRoute(val id: Int?) : Route(enterTransition = slideInHorizontally { it / 2 } + fadeIn(),
+    exitTransition = slideOutHorizontally { it / 2 } + fadeOut()) {
     @Composable
     override fun Content() {
-        NoteScreen()
+        NoteScreen(id)
     }
 }
 
-@Preview
 @Composable
-fun NoteScreen(vm: NoteViewModel = getViewModel()) {
+fun NoteScreen(id: Int?, vm: NoteViewModel = getViewModel()) {
     val title by vm.title.collectAsState()
     val dateText by vm.dateText.collectAsState()
+
+    LaunchedEffect(key1 = id) {
+        vm.id = id
+    }
 
     Scaffold(
         bottomBar = {

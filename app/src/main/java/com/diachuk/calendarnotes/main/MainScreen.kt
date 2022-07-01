@@ -1,6 +1,7 @@
 package com.diachuk.calendarnotes.main
 
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -49,7 +50,14 @@ fun MainScreen(appState: AppState = get(), vm: MainViewModel = getViewModel()) {
             columns = GridCells.Fixed(2)
         ) {
             items(notes.size) { index ->
-                Surface(elevation = 4.dp, modifier = Modifier.padding(8.dp)) {
+                Surface(
+                    elevation = 4.dp,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            vm.noteClicked(index)
+                        }
+                ) {
                     Column(Modifier.padding(8.dp)) {
                         var text = notes[index].text
 
