@@ -18,6 +18,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.diachuk.calendarnotes.AppState
+import com.diachuk.calendarnotes.styledText.StyledUtil
 import com.diachuk.routing.Route
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
@@ -59,14 +60,17 @@ fun MainScreen(appState: AppState = get(), vm: MainViewModel = getViewModel()) {
                         }
                 ) {
                     Column(Modifier.padding(8.dp)) {
-                        var text = notes[index].text
-
-                        if (text.length > 20) {
-                            text = text.substring(0..20)+"..."
+                        val note = notes[index]
+                        val text = if (note.text.length > 20) {
+                            note.text.substring(0..20)+"..."
+                        } else {
+                            note.text
                         }
 
+                        val annotatedString = StyledUtil.createAnnotatedString(text, note.styles)
+
                         Text(notes[index].title, style = TextStyle(fontSize = 26.sp))
-                        Text(text, style = TextStyle(fontSize = 18.sp))
+                        Text(annotatedString, style = TextStyle(fontSize = 18.sp))
                     }
                 }
             }

@@ -1,63 +1,23 @@
 package com.diachuk.calendarnotes.styledText
 
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.lang.Integer.min
+import java.lang.StrictMath.max
 import kotlin.experimental.and
 import kotlin.experimental.or
 import kotlin.experimental.xor
 
-enum class StyleType(val byte: Byte) {
-    None(0), Huge(0b1), Big(0b10), Medium(0b100), Bold(0b1000), Italic(0b10000)
-}
-
-
-fun Byte.createStyle(): SpanStyle {
-    var res = SpanStyle()
-
-    if (this and StyleType.Huge.byte > 0) {
-        res += SpanStyle(fontSize = 32.sp)
-    }
-    if (this and StyleType.Big.byte > 0) {
-        res += SpanStyle(fontSize = 28.sp)
-    }
-    if (this and StyleType.Medium.byte > 0) {
-        res += SpanStyle(fontSize = 24.sp)
-    }
-    if (this and StyleType.Bold.byte > 0) {
-        res += SpanStyle(fontWeight = FontWeight.Bold)
-    }
-    if (this and StyleType.Italic.byte > 0) {
-        res += SpanStyle(fontStyle = FontStyle.Italic)
-    }
-
-    return res
-}
-
-sealed class ChangeEvent {
-    data class Paste(val cursor: Int, val length: Int) : ChangeEvent()
-    data class Delete(val range: Pair<Int, Int>) : ChangeEvent()
-    data class DeletePaste(val deleteRange: Pair<Int, Int>, val pasteSize: Int) : ChangeEvent()
-    object SelectionChange : ChangeEvent()
-    object Nothing : ChangeEvent()
-}
-
 
 class StyledController {
     var textField = MutableStateFlow(TextFieldValue(""))
-    var onChange: () -> Unit = {}
+    var selectedByte = MutableStateFlow<Byte>(0b0)
 
-    private var annotatedString: AnnotatedString
+    private val annotatedString: AnnotatedString
         get() = textField.value.annotatedString
-        set(value) {
-            textField.tryEmit(textField.value.copy(annotatedString = value))
-        }
+
     private val cursor: Int?
         get() = textField.value.cursor
 
@@ -94,9 +54,7 @@ class StyledController {
     }
 
     fun changed(tf: TextFieldValue) {
-        val event = whatEvent(tf)
-        println(event)
-        when (event) {
+        when (val event = whatEvent(tf)) {
             is ChangeEvent.Paste -> {
                 val byte: Byte =
                     if (cursorStyle != null) {
@@ -141,13 +99,13 @@ class StyledController {
         }
 
         textField.tryEmit(tf)
+        changeSelectedByte()
         cursorStyle = null
     }
 
-
     fun triggerStyle(styleType: StyleType) {
-        val start = textField.value.selection.start
-        val end = textField.value.selection.end
+        val start: Int = textField.value.selection.let { min(it.start, it.end) }
+        val end: Int = textField.value.selection.let { max(it.start, it.end) }
 
         if (start == end) {
             if (start > 0) {
@@ -155,12 +113,26 @@ class StyledController {
             }
             cursorStyle = (cursorStyle ?: StyleType.None.byte) xor styleType.byte
         } else if (styles.subList(start, end).all { it and styleType.byte > 0 }) {
-            for (i in start until end) {
-                styles[i] = styles[i] xor styleType.byte
+            if ((styleType.byte and sizeByte) != 0.toByte()) {
+                for (i in start until end) {
+                    styles[i] = (styles[i] or sizeByte) xor sizeByte
+                    styles[i] = styles[i] xor styleType.byte
+                }
+            } else {
+                for (i in start until end) {
+                    styles[i] = styles[i] xor styleType.byte
+                }
             }
         } else {
-            for (i in start until end) {
-                styles[i] = styles[i] or styleType.byte
+            if ((styleType.byte and sizeByte) != 0.toByte()) {
+                for (i in start until end) {
+                    styles[i] = (styles[i] or sizeByte) xor sizeByte
+                    styles[i] = styles[i] or styleType.byte
+                }
+            } else {
+                for (i in start until end) {
+                    styles[i] = styles[i] or styleType.byte
+                }
             }
         }
 
@@ -174,15 +146,22 @@ class StyledController {
                 )
             }
         textField.tryEmit(textField.value.copy(composition = composition))
+        changeSelectedByte()
     }
 
-    fun createAnnotatedString(text: String): AnnotatedString {
-        return buildAnnotatedString {
-            append(text)
+    private fun changeSelectedByte() {
+        val start: Int = textField.value.selection.let { min(it.start, it.end) }
+        val end: Int = textField.value.selection.let { max(it.start, it.end) }
 
-            styles.forEachIndexed { index, byte ->
-                addStyle(byte.createStyle(), index, index + 1)
+        if (start == end) {
+            val byte = cursorStyle ?: if (start == 0) StyleType.None.byte else styles[start-1]
+            selectedByte.tryEmit(byte)
+        } else {
+            var resByte: Byte = 0x7f
+            for(i in start until end) {
+                resByte = resByte and styles[i]
             }
+            selectedByte.tryEmit(resByte)
         }
     }
 }

@@ -90,7 +90,6 @@ fun NoteScreen(id: Int?, vm: NoteViewModel = getViewModel()) {
 
             VSpace(size = 16.dp)
 
-            println("Before")
             StyledTextField(
                 modifier = Modifier
                     .padding(bottom = it.calculateBottomPadding())
