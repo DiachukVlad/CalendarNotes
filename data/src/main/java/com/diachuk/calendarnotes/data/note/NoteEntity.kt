@@ -1,15 +1,13 @@
 package com.diachuk.calendarnotes.data.note
 
-import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
 data class NoteEntity(
-    @NonNull val title: String,
-    @NonNull val date: Long,
-    @NonNull val text: String,
-    @NonNull val styles: ByteArray
+    val date: Long,
+    val text: String,
+    val styles: ByteArray
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

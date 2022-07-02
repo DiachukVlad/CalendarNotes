@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -15,10 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.diachuk.calendarnotes.base.HSpace
 import com.diachuk.calendarnotes.base.VSpace
 import com.diachuk.calendarnotes.styledText.StyledButtons
@@ -36,7 +32,6 @@ class NoteRoute(val id: Int?) : Route(enterTransition = slideInHorizontally { it
 
 @Composable
 fun NoteScreen(id: Int?, vm: NoteViewModel = getViewModel()) {
-    val title by vm.title.collectAsState()
     val dateText by vm.dateText.collectAsState()
 
     LaunchedEffect(key1 = id) {
@@ -60,17 +55,6 @@ fun NoteScreen(id: Int?, vm: NoteViewModel = getViewModel()) {
                 .padding(bottom = it.calculateBottomPadding())
                 .fillMaxSize()
         ) {
-            // Title
-            BasicTextField(
-                modifier = Modifier
-                    .padding(top = 24.dp, start = 16.dp),
-                value = title,
-                onValueChange = vm::changeTitle,
-                textStyle = TextStyle(fontSize = 26.sp, fontWeight = FontWeight.Medium)
-            )
-
-            VSpace(size = 24.dp)
-
             OutlinedButton(
                 onClick = { /*TODO*/ },
                 modifier = Modifier.padding(start = 16.dp)

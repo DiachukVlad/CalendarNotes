@@ -23,18 +23,12 @@ class NoteViewModel(private val noteRepo: NoteRepo, private val appState: AppSta
 
     val isEditing get() = id != null
 
-    val title = MutableStateFlow("Untitled")
     val dateText = MutableStateFlow("Date")
     val styledController = StyledController()
-
-    fun changeTitle(string: String) {
-        title.tryEmit(string)
-    }
 
     fun onDoneClick() {
         viewModelScope.launch(Dispatchers.IO) {
             val note = Note(
-                title = title.value,
                 text = styledController.textField.value.annotatedString.text,
                 date = 0,
                 styles = styledController.styles,
@@ -55,7 +49,6 @@ class NoteViewModel(private val noteRepo: NoteRepo, private val appState: AppSta
     private fun setupNote() {
         viewModelScope.launch(Dispatchers.IO) {
             if (id == null) {
-                title.emit("Untitled")
                 styledController.styles.clear()
                 styledController.textField.emit(TextFieldValue())
                 return@launch
@@ -63,7 +56,6 @@ class NoteViewModel(private val noteRepo: NoteRepo, private val appState: AppSta
 
 
             val note = noteRepo.getById(id!!)
-            title.emit(note.title)
             styledController.styles.run {
                 clear()
                 addAll(note.styles)
