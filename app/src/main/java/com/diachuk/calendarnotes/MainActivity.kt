@@ -1,6 +1,7 @@
 package com.diachuk.calendarnotes
 
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +30,12 @@ class MainActivity : ComponentActivity() {
                 RoutingHost(routing = appState.routing)
             }
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        println(keyCode)
+        println(event)
+        return super.onKeyDown(keyCode, event)
     }
 }
 

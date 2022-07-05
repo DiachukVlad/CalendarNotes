@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 
-class SelectableItem(var textField: TextFieldValue) {
+open class SelectableItem(var textField: TextFieldValue) {
     var focused: Boolean by mutableStateOf(false)
 
     constructor(textField: TextFieldValue, focused: Boolean) : this(textField) {
@@ -27,7 +27,7 @@ class SelectableItem(var textField: TextFieldValue) {
 
     companion object {
         fun empty(focused: Boolean = false): SelectableItem {
-            return SelectableItem(TextFieldValue()).also { it.focused = focused }
+            return SelectableItem(TextFieldValue(" ", TextRange(1,1))).also { it.focused = focused }
         }
     }
 }
