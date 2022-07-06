@@ -1,6 +1,5 @@
 package com.diachuk.calendarnotes.selectableText
 
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.ClickableText
@@ -13,16 +12,20 @@ import androidx.compose.ui.focus.*
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun SelectableEditText(
-    value: SelectableItem,
-    onValueChange: (SelectableItem) -> Unit,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
+    editable: Boolean = false,
+    requester: FocusRequester = remember { FocusRequester() },
+    onLostFocus: () -> Unit = {},
+    onGetFocus: (offset: Int)->Unit = {},
     style: TextStyle = LocalTextStyle.current,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -31,19 +34,16 @@ fun SelectableEditText(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     cursorBrush: Brush = SolidColor(Color.Black),
 ) {
-    val requester = remember {
-        FocusRequester()
-    }
     var wasFocused by remember {
         mutableStateOf(false)
     }
 
-    if (value.focused) {
+    if (editable) {
         BasicTextField(
-            value = value.textField,
+            value = value,
             onValueChange = {
-                if (value.textField != it) {
-                    onValueChange(value.copy(textField = it))
+                if (value != it) {
+                    onValueChange(it)
                 }
             },
             textStyle = style,
@@ -51,9 +51,10 @@ fun SelectableEditText(
                 .focusRequester(requester)
                 .onFocusEvent {
                     if (wasFocused && !it.isFocused) {
-                        value.focused = false
-                        wasFocused = false
+                        onLostFocus()
                     }
+                    println(it)
+                    wasFocused = it.isFocused
                 },
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
@@ -66,22 +67,21 @@ fun SelectableEditText(
         ClickableText(modifier = modifier
             .onFocusChanged {
                 if (it.isFocused) {
-                    value.focused = true
+                    onGetFocus(-1)
                 }
             }
             .focusTarget()
             .defaultMinSize(minWidth = 10.dp, minHeight = 10.dp),
-            text = value.textField.annotatedString,
+            text = value.annotatedString,
             style = style,
             onClick = { offset ->
-                value.focused = true
-                value.putCursorOn(offset)
+                onGetFocus(offset)
             }
         )
     }
 
-    LaunchedEffect(value.focused) {
-        if (value.focused) {
+    LaunchedEffect(editable) {
+        if (editable) {
             requester.requestFocus()
         }
     }
