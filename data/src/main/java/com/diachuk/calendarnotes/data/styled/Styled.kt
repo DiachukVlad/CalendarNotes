@@ -3,23 +3,29 @@
 package com.diachuk.calendarnotes.data
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import com.diachuk.calendarnotes.data.notecomponent.NoteComponentEntity
 
-data class Styled(
-    val id: Int = -1,
+class Styled(
+    val id: Long = -1,
     val text: String,
     val styles: List<Byte>,
-): NoteComponent()
-
-@Entity
-class StyledEntity(
-    val text: String,
-    val styles: ByteArray
-) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
+    position: Int = 0
+) : NoteComponent(position) {
+    override fun toString(): String {
+        return "Styled(id=$id, text='$text', styles=$styles)"
+    }
 }
 
+const val STYLED_ENTITY_TABLE_NAME = "StyledEntity"
 
-fun StyledEntity.toStyled() = Styled(id, text, styles.toList())
-fun Styled.toStyledEntity() = StyledEntity(text, styles.toByteArray()).also { it.id = id }
+@Entity(tableName = STYLED_ENTITY_TABLE_NAME)
+class StyledEntity(
+    val text: String,
+    val styles: ByteArray,
+    noteId: Long,
+    position: Int
+) : NoteComponentEntity(noteId, position)
+
+//
+//fun StyledEntity.toStyled() = Styled(id, text, styles.toList())
+//fun Styled.toStyledEntity() = StyledEntity(text, styles.toByteArray()).also { it.id = id }

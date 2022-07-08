@@ -28,7 +28,7 @@ import com.diachuk.calendarnotes.styledText.StyledTextField
 import com.diachuk.routing.Route
 import org.koin.androidx.compose.getViewModel
 
-class NoteRoute(val id: Int?) : Route(enterTransition = slideInHorizontally { it / 2 } + fadeIn(),
+class NoteRoute(val id: Long?) : Route(enterTransition = slideInHorizontally { it / 2 } + fadeIn(),
     exitTransition = slideOutHorizontally { it / 2 } + fadeOut()) {
     @Composable
     override fun Content() {
@@ -37,7 +37,7 @@ class NoteRoute(val id: Int?) : Route(enterTransition = slideInHorizontally { it
 }
 
 @Composable
-fun NoteScreen(id: Int?, vm: NoteViewModel = getViewModel()) {
+fun NoteScreen(id: Long?, vm: NoteViewModel = getViewModel()) {
     val dateText by vm.dateText.collectAsState()
 
     LaunchedEffect(key1 = id) {

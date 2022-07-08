@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp'
     id 'kotlin-kapt'
 }
 
@@ -29,11 +30,18 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    libraryVariants.all { variant ->
+        variant.sourceSets.java.each {
+            it.srcDirs += "build/generated/ksp/${variant.name}/kotlin"
+        }
+    }
 }
 
 dependencies {
     def room_version = "2.4.2"
     def koin_version= "3.2.0"
+    def koin_ksp_version= "1.0.1"
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
@@ -46,6 +54,8 @@ dependencies {
 
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_version"
+    implementation "io.insert-koin:koin-annotations:$koin_ksp_version"
+    ksp "io.insert-koin:koin-ksp-compiler:$koin_ksp_version"
 
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"

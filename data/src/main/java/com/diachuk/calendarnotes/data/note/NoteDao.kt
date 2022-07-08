@@ -4,18 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.diachuk.calendarnotes.data.base.BaseDao
 
 @Dao
-interface NoteDao {
-    @Query("SELECT * FROM NoteEntity")
-    fun getAll(): List<NoteEntity>
-
-    @Query("SELECT * from NoteEntity where id = :id")
-    fun getById(id: Int): NoteEntity
-
-    @Insert
-    fun insertAll(vararg notes: NoteEntity)
-
-    @Update
-    fun update(note: NoteEntity)
-}
+abstract class NoteDao: BaseDao<NoteEntity>(NOTE_ENTITY_TABLE_NAME)

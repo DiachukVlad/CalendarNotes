@@ -17,7 +17,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class NoteViewModel(private val noteRepo: NoteRepo, private val appState: AppState) : ViewModel() {
-    var id: Int? = null
+    var id: Long? = null
         set(value) {
             field = value
             setupNote()
