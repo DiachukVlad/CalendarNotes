@@ -1,25 +1,41 @@
 package com.diachuk.calendarnotes.data.note
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.diachuk.calendarnotes.data.*
+
+
 data class Note(
-    val text: String,
-    val styles: ArrayList<Byte>,
     val date: Long,
-    val id: Int = 0
+    val id: Int = 0,
+    val components: List<NoteComponent>
 )
 
-fun NoteEntity.toNote(): Note {
-    return Note(
-        text = text,
-        styles = ArrayList(styles.asList()),
-        date = date,
-        id = id,
-    )
+@Entity
+data class NoteEntity(
+    val date: Long,
+    val components: List<NoteComponentEntity>
+) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
 }
 
-fun Note.toNoteEntity(): NoteEntity {
-    return NoteEntity(
-        text = text,
-        styles = styles.toByteArray(),
-        date = date
-    ).also { it.id = id }
-}
+fun NoteEntity.toNote() = Note(
+    date = date,
+    id = id,
+    components = components
+        .filter { it.styled != null || it.checkList != null }
+        .map {
+            if (it.styled != null) {
+                it.styled.toStyled()
+            } else {
+                it.checkList!!.toCheckList()
+            }
+        }
+)
+
+fun Note.toNoteEntity() = NoteEntity(
+    date = date,
+    components = components.map { it.toNoteComponentEntity() }
+).also { it.id = id }
