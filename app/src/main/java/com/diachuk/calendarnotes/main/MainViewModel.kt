@@ -3,9 +3,6 @@ package com.diachuk.calendarnotes.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.diachuk.calendarnotes.AppState
-import com.diachuk.calendarnotes.data.CheckList
-import com.diachuk.calendarnotes.data.CheckListItem
-import com.diachuk.calendarnotes.data.Styled
 import com.diachuk.calendarnotes.data.note.Note
 import com.diachuk.calendarnotes.data.note.NoteRepo
 import com.diachuk.calendarnotes.note.NoteRoute
@@ -20,25 +17,7 @@ class MainViewModel(private val appState: AppState, private val noteRepo: NoteRe
 
     fun onLaunch() {
         viewModelScope.launch(Dispatchers.IO) {
-//            noteRepo.insertNote(
-//                Note(
-//                    date = 56465487L,
-//                    components = listOf(
-//                        Styled(text = "asdlkasd", styles = arrayListOf(1, 2, 3, 4)),
-//                        Styled(text = "rty", styles = arrayListOf(1, 2, 3, 4)),
-//                        CheckList(
-//                            items = listOf(
-//                                CheckListItem(checked = true, text = "qwe"),
-//                                CheckListItem(checked = true, text = "dfg"),
-//                                CheckListItem(checked = false, text = "asd")
-//                            )
-//                        ),
-//                        Styled(text = "qwe", styles = arrayListOf(1, 2, 3, 4)),
-//                    )
-//                )
-//            )
-            println(noteRepo.notes)
-//            notes.emit(noteRepo.notes)
+            notes.emit(noteRepo.notes)
         }
     }
 

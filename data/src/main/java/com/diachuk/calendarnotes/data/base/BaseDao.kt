@@ -29,11 +29,11 @@ abstract class BaseDao<T : BaseEntity>(private val tableName: String) {
     @RawQuery
     protected abstract fun getEntitySync(query: SupportSQLiteQuery): List<T>?
 
-    fun getEntityById(id: Int): T? {
+    fun getEntityById(id: Long): T? {
         return getEntitiesByIds(listOf(id))?.firstOrNull()
     }
 
-    fun getEntitiesByIds(ids: List<Int>): List<T>? {
+    fun getEntitiesByIds(ids: List<Long>): List<T>? {
         val result = StringBuilder()
         for (index in ids.indices) {
             if (index != 0) {

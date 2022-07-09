@@ -3,6 +3,7 @@ package com.diachuk.calendarnotes.styledText
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import com.diachuk.calendarnotes.data.Styled
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.lang.Integer.min
 import java.lang.StrictMath.max
@@ -11,7 +12,7 @@ import kotlin.experimental.or
 import kotlin.experimental.xor
 
 
-class StyledController {
+class StyledController() {
     var textField = MutableStateFlow(TextFieldValue(""))
     var selectedByte = MutableStateFlow<Byte>(0b0)
 
@@ -21,9 +22,22 @@ class StyledController {
     private val cursor: Int?
         get() = textField.value.cursor
 
+    private var id: Long = -1
+
     val styles =
         ArrayList<Byte>().also { it.addAll(Array(annotatedString.length) { StyleType.None.byte }) }
     private var cursorStyle: Byte? = null
+
+    constructor(styled: Styled) : this() {
+        id = styled.id
+        styles.clear()
+        styles.addAll(styled.styles)
+        textField.tryEmit(TextFieldValue(styled.text))
+    }
+
+    fun generateStyled(): Styled {
+        return Styled(text = textField.value.text, styles = styles, id = id)
+    }
 
     private fun whatEvent(tf: TextFieldValue): ChangeEvent {
         if (tf.text == textField.value.text && tf.selection == textField.value.selection) {

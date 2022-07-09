@@ -9,18 +9,15 @@ import androidx.compose.material.Checkbox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import com.diachuk.calendarnotes.styledText.copyWithCursorOnLast
 
-data class CheckListItem(val textField: TextFieldValue, val checked: Boolean)
+data class CheckListItemForController(val textField: TextFieldValue, val checked: Boolean)
 
 @Composable
 fun CheckList(controller: CheckListController) {
@@ -31,7 +28,9 @@ fun CheckList(controller: CheckListController) {
     Column {
         controller.items.forEachIndexed { index, value ->
             Row {
-                Checkbox(checked = value.checked, onCheckedChange = {controller.onCheckChanged(index, it)})
+                Checkbox(
+                    checked = value.checked,
+                    onCheckedChange = { controller.onCheckChanged(index, it) })
                 FocusableTextField(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     value = value.textField,

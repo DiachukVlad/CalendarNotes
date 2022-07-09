@@ -22,14 +22,14 @@ import com.diachuk.calendarnotes.base.HSpace
 import com.diachuk.calendarnotes.base.VSpace
 import com.diachuk.calendarnotes.list.CheckList
 import com.diachuk.calendarnotes.list.CheckListController
-import com.diachuk.calendarnotes.styledText.StyledButtons
 import com.diachuk.calendarnotes.styledText.StyledController
 import com.diachuk.calendarnotes.styledText.StyledTextField
 import com.diachuk.routing.Route
 import org.koin.androidx.compose.getViewModel
 
-class NoteRoute(val id: Long?) : Route(enterTransition = slideInHorizontally { it / 2 } + fadeIn(),
-    exitTransition = slideOutHorizontally { it / 2 } + fadeOut()) {
+class NoteRoute(private val id: Long?) :
+    Route(enterTransition = slideInHorizontally { it / 2 } + fadeIn(),
+        exitTransition = slideOutHorizontally { it / 2 } + fadeOut()) {
     @Composable
     override fun Content() {
         NoteScreen(id)
@@ -51,9 +51,12 @@ fun NoteScreen(id: Long?, vm: NoteViewModel = getViewModel()) {
             }
         },
         floatingActionButton = {
-            Column() {
+            Column {
                 FloatingActionButton(onClick = vm::addCheckList) {
-                    Icon(imageVector = Icons.Default.Checklist, contentDescription = "Add checklist")
+                    Icon(
+                        imageVector = Icons.Default.Checklist,
+                        contentDescription = "Add checklist"
+                    )
                 }
                 FloatingActionButton(onClick = vm::onDoneClick) {
                     Icon(imageVector = Icons.Default.Done, contentDescription = "Done")
