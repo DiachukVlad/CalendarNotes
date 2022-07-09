@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.diachuk.calendarnotes.styledText.StyledUtil
+import com.diachuk.calendarnotes.data.Styled
 import com.diachuk.routing.Route
 import org.koin.androidx.compose.getViewModel
 
@@ -57,8 +57,10 @@ fun MainScreen(vm: MainViewModel = getViewModel()) {
                     Column(Modifier.padding(8.dp)) {
                         val note = notes[index]
 
+                        val styled = (note.components.firstOrNull { it is Styled } as Styled?)
+                        val text = styled?.text ?: "Empty"
 
-                        Text("${note.id}", style = TextStyle(fontSize = 18.sp))
+                        Text(text, style = TextStyle(fontSize = 18.sp))
                     }
                 }
             }

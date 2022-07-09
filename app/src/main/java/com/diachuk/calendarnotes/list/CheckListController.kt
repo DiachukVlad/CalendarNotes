@@ -14,9 +14,11 @@ class CheckListController() {
     var focusManager: FocusManager? = null
 
     val items = mutableStateListOf(
-        CheckListItemForController(TextFieldValue(" ", selection = TextRange(1,1)), false),
+        CheckListItemForController(TextFieldValue(" ", selection = TextRange(1, 1)), false),
     )
     val focusIndex = MutableStateFlow(-1)
+
+    var onRemovedLastElement: () -> Unit = {}
 
     private var id: Long = -1
 
@@ -32,10 +34,12 @@ class CheckListController() {
     }
 
     fun generateCheckList(): CheckList {
-        return CheckList(items = items.map {
-            CheckListItem(text = it.textField.text, checked = it.checked)
-        },
-        id = id)
+        return CheckList(
+            items = items.map {
+                CheckListItem(text = it.textField.text, checked = it.checked)
+            },
+            id = id
+        )
     }
 
     fun onCheckChanged(index: Int, checked: Boolean) {
@@ -47,6 +51,18 @@ class CheckListController() {
             if (items.size > index) {
                 items.removeAt(index)
                 focusManager?.moveFocus(FocusDirection.Up)
+                if (index > 0) {
+                    items[index - 1] = items[index - 1].copy(
+                        textField = items[index - 1].textField.copy(
+                            selection = TextRange(
+                                items[index - 1].textField.text.length,
+                                items[index - 1].textField.text.length
+                            )
+                        )
+                    )
+                }
+
+                if (items.isEmpty()) onRemovedLastElement()
             }
         } else if (textField.text.first() == ' ') {
             if (textField.selection.start == 0) {

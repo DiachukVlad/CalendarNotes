@@ -9,6 +9,7 @@ import com.diachuk.calendarnotes.data.Styled
 import com.diachuk.calendarnotes.data.note.Note
 import com.diachuk.calendarnotes.data.note.NoteRepo
 import com.diachuk.calendarnotes.list.CheckListController
+import com.diachuk.calendarnotes.styledText.StyleType
 import com.diachuk.calendarnotes.styledText.StyledController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,37 +30,59 @@ class NoteViewModel(private val noteRepo: NoteRepo, private val appState: AppSta
     val dateText = MutableStateFlow("Date")
     val controllers = mutableStateListOf<Any>()
 
+    private val note
+        get() = Note(
+            date = 0,
+            id = id ?: 0,
+            components = controllers
+                .filter { it is StyledController || it is CheckListController }
+                .map {
+                    when (it) {
+                        is StyledController -> it.generateStyled()
+                        is CheckListController -> it.generateCheckList()
+                        else -> CheckList(items = listOf())
+                    }
+                }
+        )
+
+    /**
+     * Event handlers
+     */
+
     fun addCheckList() {
-        controllers.add(CheckListController().apply { focusIndex.tryEmit(0) })
+        controllers.add(CheckListController()
+            .apply {
+                focusIndex.tryEmit(0)
+                onRemovedLastElement = {
+                    println("remove")
+                    controllers.remove(this@apply)
+                    mergeStyled()
+                }
+            })
         controllers.add(StyledController())
+    }
+
+    fun removeNote() {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepo.delete(note)
+            navigateBack()
+        }
     }
 
     fun onDoneClick() {
         viewModelScope.launch(Dispatchers.IO) {
-            val note = Note(
-                date = 0,
-                id = id ?: 0,
-                components = controllers
-                    .filter { it is StyledController || it is CheckListController }
-                    .map {
-                        when (it) {
-                            is StyledController -> it.generateStyled()
-                            is CheckListController -> it.generateCheckList()
-                            else -> CheckList(items = listOf())
-                        }
-                    }
-            )
-
             if (isEditing) {
                 noteRepo.update(note)
             } else {
                 noteRepo.insert(note)
             }
-            withContext(Dispatchers.Main) {
-                appState.routing.pop()
-            }
+            navigateBack()
         }
     }
+
+    /**
+     * Private methods
+     */
 
     private fun setupNote() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -75,9 +98,46 @@ class NoteViewModel(private val noteRepo: NoteRepo, private val appState: AppSta
                 @Suppress("NON_EXHAUSTIVE_WHEN_STATEMENT")
                 when (it) {
                     is Styled -> controllers.add(StyledController(it))
-                    is CheckList -> controllers.add(CheckListController(it))
+                    is CheckList -> controllers.add(CheckListController(it).apply {
+                        onRemovedLastElement = {
+                            controllers.remove(this@apply)
+                            mergeStyled()
+                        }
+                    })
                 }
             }
+
+            mergeStyled()
         }
+    }
+
+    private fun mergeStyled() {
+        controllers.removeIf { it is CheckListController && it.items.isEmpty() }
+
+        var i = 0
+        while (i < controllers.size - 1) {
+            val current = controllers[i]
+            val next = controllers[i + 1]
+            if (current is StyledController && next is StyledController) {
+                current.textField.tryEmit(
+                    current.textField.value.copy(
+                        text = current.textField.value.text + "\n" + next.textField.value.text
+                    )
+                )
+                current.styles.apply {
+                    add(StyleType.None.byte)
+                    addAll(next.styles)
+                }
+
+                controllers[i] = StyledController(current.generateStyled())
+                controllers.remove(next)
+            } else {
+                i++
+            }
+        }
+    }
+
+    private suspend fun navigateBack() = withContext(Dispatchers.Main) {
+        appState.routing.pop()
     }
 }

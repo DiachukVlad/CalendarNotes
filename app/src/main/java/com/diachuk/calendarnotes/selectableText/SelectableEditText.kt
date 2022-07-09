@@ -53,7 +53,6 @@ fun SelectableEditText(
                     if (wasFocused && !it.isFocused) {
                         onLostFocus()
                     }
-                    println(it)
                     wasFocused = it.isFocused
                 },
             keyboardOptions = keyboardOptions,
